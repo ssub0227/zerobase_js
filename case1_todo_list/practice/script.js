@@ -89,6 +89,61 @@
     }).then(getTodos).catch((error)=>{console.error(error)})
   }
 
+  // 수정 버튼 눌렀을 경우 
+  const changeEditMode = (e) =>{
+    const $item = e.target.closest('.item');
+    const $label = $item.querySelector('label');
+    const $editInput = $item.querySelector('input[type="text"]');
+    const $contentButton = $item.querySelector('.content_buttons');
+    const $editButton = $item.querySelector('.edit_buttons');   
+    const editInputValue = $editInput.value;
+    
+    if(e.target.className === 'todo_edit_button'){
+      $label.style.display ='none';
+      $editInput.style.display ='block';
+      $contentButton.style.display ='none';
+      $editButton.style.display ='flex';
+      $editInput.focus();
+      $editInput.value = '';
+      $editInput.value = editInputValue;
+
+    }
+
+    if(e.target.className === 'todo_edit_cancel_button'){
+      $label.style.display ='block';
+      $editInput.style.display ='none';
+      $contentButton.style.display ='flex';
+      $editButton.style.display ='none';
+      $editInput.value = $label.innerHTML;
+    }
+  }
+
+  // 수정 버튼 클릭 후 수정 완료 시
+  const editTodo = (e) => {
+    if(e.target.classList != 'todo_edit_confirm_button') return;
+    const $item = e.target.closest('.item');
+    const id = $item.dataset.id;
+    const $editInput = $item.querySelector('input[type="text"]');
+    const content = $editInput.value;
+    
+    fetch(`${API_URL}/${id}`,{
+      method:'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content })
+    }).then(getTodos).catch((error) => {console.error(error)})
+  }
+
+  // 투두 리스트 삭제
+  const removeTodo = (e) =>{
+    if(e.target.classList == 'todo_remove_button'){
+      const $item = e.target.closest('.item');
+      const id = $item.dataset.id; 
+
+      fetch(`${API_URL}/${id}`,{
+        method:'DELETE'}).then(getTodos).catch((error) => console.error(error))
+    }
+  }
+
   //실제 실행되는 함수들
   const init = () => {
     window.addEventListener('DOMContentLoaded', ()=>{
@@ -97,6 +152,9 @@
 
     $form.addEventListener('submit', addTodo);
     $todos.addEventListener('click',toggleTodo);
+    $todos.addEventListener('click',changeEditMode);
+    $todos.addEventListener('click',editTodo);
+    $todos.addEventListener('click',removeTodo);
   }
   init()
 })()
