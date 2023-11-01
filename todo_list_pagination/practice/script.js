@@ -9,69 +9,6 @@
   const $todos = get('.todos');
   const $form = get('.todo_form');
   const $todoInput = get('.todo_input');
-  const $pagination = get('.pagination');
-
-  const limit = 5;
-  let currentPage = 1;
-  const totalCount = 53; // 현재 json 서버라 임의 지정
-  const pageCount = 5;
-  
-  // 페이지네이션
-  const pagiNation = () =>{
-    //총 페이지 갯수 계산하기
-    let totalPage = Math.ceil(totalCount / limit);
-    
-    //현재 페이지 그룹
-    let pageGroup = Math.ceil(currentPage / pageCount);
-
-    //현재 페이지 그룹 첫번째와 마지막 구하기
-    let lastNumber = pageGroup * pageCount;
-    if (lastNumber > totalPage){ // 마지막 숫자가 전체보다 크면 마지막 페이지를 전체 페이지로 맞춤
-      lastNumber = totalPage 
-    }
-    let firstNumber = lastNumber - (pageCount - 1);
-    
-    const next = lastNumber + 1;
-    const prev = firstNumber - 1;
-
-    let html = ``;
-
-    // 이전 버튼 보이게
-    if (prev > 0) {
-      html += '<button class="prev" data-fn="prev">이전</button>'
-    }
-
-    // 1~5만큼 페이지네이션 그려줌
-    for (let i = firstNumber; i <= lastNumber; i++) {
-      html += `<button class="pageNumber" id="page_${i}">${i}</button>`
-    }
-
-    // 다음 버튼 보이게
-    if (lastNumber != totalPage) {
-      html += '<button class="next" data-fn="next">다음</button>'
-    }
-
-    $pagination.innerHTML = html;
-
-    const $currentPageNumber = get(`.pageNumber#page_${currentPage}`);
-    $currentPageNumber.style.color = "#9dc8e9";
-
-    const $currentPageNumbers = document.querySelectorAll(".pagination button");
-    $currentPageNumbers.forEach(button => {
-      button.addEventListener('click',() => {
-        if(button.dataset.fn == "prev"){
-          currentPage = prev;
-        } else if(button.dataset.fn == "next"){
-          currentPage = next;
-        } else {
-          currentPage = button.innerText;
-        }
-        pagiNation();
-        getTodos();
-      })
-    })
-
-  }
 
   const createTodoElement = (item) => {
     const { id, content, completed } = item
@@ -119,7 +56,7 @@
 
   // json-server fetch
   const getTodos = () =>{
-    fetch(`${API_URL}?_page=${currentPage}&_limit=${limit}`).then((response) => response.json()).then((response) => renderAllTodos(response)).catch((error) => console.error(error))
+    fetch(API_URL).then((response) => response.json()).then((response) => renderAllTodos(response)).catch((error) => console.error(error))
   } 
 
   // input 입력시 list에 add
@@ -211,7 +148,6 @@
   const init = () => {
     window.addEventListener('DOMContentLoaded', ()=>{
       getTodos();
-      pagiNation();
     });
 
     $form.addEventListener('submit', addTodo);
