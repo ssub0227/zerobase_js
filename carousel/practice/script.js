@@ -17,6 +17,32 @@
     setEventListener(){
       this.prevButton = this.carouselElement.querySelector('carousel_button--prev')
       this.nextButton = this.carouselElement.querySelector('carousel_button--next')
+
+      this.nextButton.addEventListener('click', () => {
+        this.movePrev()
+      })
+
+      this.prevButton.addEventListener('click', () => {
+        this.moveNext()
+      })
+    }
+
+    movePrev(){
+      if(this.current === 0){
+        this.current = this.totalItems - 1  //current 가 0일 경우 마지막 숫자로 변경
+      } else {
+        this.current --
+      }
+      this.moveCarouselTo()
+    }
+
+    moveNext(){
+      if(this.current === this.totalItems - 1){
+        this.current = 0  //current 가 마지막일 경우에 moveNext() 호출시 current 를 0으로 변경
+      } else {
+        this.current ++
+      }
+      this.moveCarouselTo()
     }
   }
 
