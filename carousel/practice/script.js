@@ -15,16 +15,45 @@
     }
 
     setEventListener(){
-      this.prevButton = this.carouselElement.querySelector('carousel_button--prev')
-      this.nextButton = this.carouselElement.querySelector('carousel_button--next')
+      this.prevButton = this.carouselElement.querySelector('.carousel_button--prev')
+      this.nextButton = this.carouselElement.querySelector('.carousel_button--next')
 
-      this.nextButton.addEventListener('click', () => {
+      this.prevButton.addEventListener('click', () => {
         this.movePrev()
       })
 
-      this.prevButton.addEventListener('click', () => {
+      this.nextButton.addEventListener('click', () => {
         this.moveNext()
       })
+    }
+
+    initCarousel(){
+      this.items[0].classList.add('active')
+      this.items[1].classList.add('next')
+      this.items[this.totalItems -1 ].classList.add('prev')
+    }
+     
+    moveCarouselTo(){
+      let prev = this.current - 1
+      let next = this.current + 1
+
+      if (this.current === 0){
+        prev = this.totalItems -1 // 현재가 0이면 prev 은 마지막에 와야 함
+      } else if (this.current === this.totalItems -1){
+        next = 0 // 현재가 가장 마지막이면 next 는 0이 와야 함
+      }
+
+      for (let i= 0 ; i <this.totalItems; i ++){
+        if(i === this.current){
+          this.items[i].className = this.itemClassName + ' active'
+        } else if (i === prev){
+          this.items[i].className = this.itemClassName + ' prev'
+        } else if (i === next){
+          this.items[i].className = this.itemClassName + ' next'
+        } else {
+          this.items[i].className = this.itemClassName 
+        }
+      }
     }
 
     movePrev(){
@@ -42,15 +71,16 @@
       } else {
         this.current ++
       }
-      this.moveCarouselTo()
+      this.moveCarouselTo() 
     }
   }
 
    
   document.addEventListener('DOMContentLoaded', () => {
     const carouselElement = get('.carousel')
-    const carousel = Carousel(carouselElement)
+    const carousel = new Carousel(carouselElement)
 
-
+    carousel.initCarousel()
+    carousel.setEventListener()
   })
 })()
