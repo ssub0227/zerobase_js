@@ -11,6 +11,22 @@
   const init = () => {
     $search.addEventListener('keyup', search)
     $searchButton.addEventListener('click', search)
+    
+    for(let index = 0; index < $list.length; index ++){
+      const $target = $list[index].querySelector('picture')
+      $target.addEventListener('mouseover', onMouseOver)
+      $target.addEventListener('mouseout', onMouseOut)
+    }
+  }
+
+  const onMouseOver = (e) => {
+    const webpPlay = e.target.parentNode.querySelector('source') // parentNode : 마우스한 요소가 img나 source 이기 때문에 
+    webpPlay.setAttribute('srcset', './assets/sample.webp')
+  }
+
+  const onMouseOut = (e) => {
+    const webpPlay = e.target.parentNode.querySelector('source') 
+    webpPlay.setAttribute('srcset', './assets/sample.jpg')
   }
 
   const search = () =>{
