@@ -16,7 +16,17 @@
       const $target = $list[index].querySelector('picture')
       $target.addEventListener('mouseover', onMouseOver)
       $target.addEventListener('mouseout', onMouseOut)
+      $list[index].addEventListener('click', hashChange)
     }
+
+    window.addEventListener('hashchange', ()=>{
+      const isView = -1 < window.location.hash.indexOf('view')
+      if(isView){
+        getViewPage()
+      } else{
+        getListPage()
+      }
+    })
   }
 
   const onMouseOver = (e) => {
@@ -41,6 +51,28 @@
         $list[index].style.display = 'none'
       }
     }
+  }
+
+  const hashChange = (e) => {
+    e.preventDefault() //hashChange는 요소가 클릭되면 실행되기 때문에 a 태그의 기본 기능을 없앰 
+    const parentNode = e.target.closest('figure')
+    const viewTitle = parentNode.querySelector('strong').textContent
+    window.location.hash = `view&${viewTitle}`
+  }
+
+  
+  const getViewPage = () => {
+    const $viewTitle = get('.view strong')
+    const urlTitle = decodeURI(window.location.hash.split('&')[1]) // &문자가 이스케이핑 처리 된 것을 decodeURI로 다시 되돌림
+    $viewTitle.innerText = urlTitle
+
+    get('.list').style.display = 'none'
+    get('.view').style.display = 'flex'
+  }
+
+  const getListPage  = () => {
+    get('.list').style.display = 'flex'
+    get('.view').style.display = 'none'
   }
 
   init()
