@@ -46,18 +46,18 @@
   }
 
   const init = () => {
-    // document.addEventListener('keydown',(event) => {
-    //   if(!/Arrow/gi.test(event.key)){ // 정규식 - Arrow문자가 event.key에 포함되어있는지 대소문자 상관 없이 검사 
-    //     return //방향키가 아니라면 return
-    //   }
+    document.addEventListener('keydown', (event) => {
+      if (!/Arrow/gi.test(event.key)) { // 정규식 - Arrow문자가 event.key에 포함되어있는지 대소문자 상관 없이 검사 
+        return //방향키가 아니라면 return
+      }
 
-    //   event.preventDefault()
-    //   const direction = getDirection(event, key)
-    //   if(!isDirectionCorrect(direction)){
-    //     return
-    //   } 
-    //   option.direction = direction 
-    // })
+      event.preventDefault()
+      const direction = getDirection(event.key)
+      if (!isDirectionCorrect(direction)) {
+        return
+      }
+      option.direction = direction
+    })
 
     $play.onclick = () => {
       if (option.gameEnd) { // 게임이 끝났으면 option 초기화
@@ -89,7 +89,7 @@
         }
         $score.innerHTML = `점수: 0점 `
         $highscore.innerHTML = `최고 점수: ${option.highscore}점 `
-        // randomFood()
+        randomFood()
         window.requestAnimationFrame(play) // 애니메이션 렌더링 최적화 -> 지렁이가 움직일 때 셋인터벌로 했을 때보다 프레임이 자연스럽다
       }
     }
@@ -119,24 +119,151 @@
     }
   }
 
+  const setHighScore = () =>{
+    const localScore = option.highscore * 1 || 0 // 숫자 형변환을 위해 * 1 
+    const finalScore = $score.textContent.match(/(\d+)/)[0] * 1 //정규식 숫자 필터링
+    if(localScore < finalScore){
+      alert(`최고기록 : ${localScore}`)
+      localStorage.setItem('score', finalScore)
+    }
+  }
+  const setDirection = (number, value) => {
+    while (value < 0) {
+      value += number // number(300) 보다 value 값이 작으면 300을 더해줘서 프레임 안으로 다시 들어오게 
+    }
+
+    return value % number
+  }
+
+  const setBody = () => {
+    const tail = option.snake[option.snake.length - 1]
+    const direction = tail.direction // 마지막 꼬리의 디렉션
+    let x = tail.x
+    let y = tail.y
+
+    switch (direction) {
+      case 1: // down
+        y = setDirection(300, y - 10)
+        break
+      case -1: //up
+        y = setDirection(300, y + 10)
+        break
+      case 2: //right
+        x = setDirection(300, x - 10)
+        break
+      case -2: //left
+        x = setDirection(300, x + 10)
+        break
+    }
+    option.snake.push(x, y, direction) //option.snake 에 새로 추가
+  }
+
+  const getFood = () => {
+    const snakeX = option.snake[0].x
+    const snakeY = option.snake[0].y
+    const foodX = option.food.x
+    const foodY = option.food.y
+    if (snakeX === foodX && snakeY === foodY) {
+      option.score++
+      $score.innerHTML = `점수: ${option.score}점`
+      setBody()
+      randomFood()
+    }
+  }
+
+  const randomFood = () => {
+    let x = Math.floor(Math.random() * 25) * 10 //25 -> 300캔버스 내의 250 정도의 영역에서 랜덤하게 생성되게
+    let y = Math.floor(Math.random() * 25) * 10
+    while (option.snake.some((part) => {
+        part.x === x && part.y === y
+      })) { // part.x,y-> 뱀의 위치, 뱀의 위치랑 랜덤푸드가 동일하면 게임 시작하자마자 먹이 먹으면 안되니까
+      x = Math.floor(Math.random() * 25) * 10
+      y = Math.floor(Math.random() * 25) * 10
+    }
+
+    option.food = {
+      x,
+      y
+    }
+  }
+
+  const playSnake = () =>{
+    let x = option.snake[0].x
+    let y = option.snake[0].y
+    switch(option.direction){
+      case 1: // down
+        y = setDirection(300, y + 10)
+        break
+      case -1: //up
+        y = setDirection(300, y - 10)
+        break
+      case 2: //right
+        x = setDirection(300, x + 10)
+        break
+      case -2: //left
+        x = setDirection(300, x - 10)
+        break
+    }
+    const snake = [{x,y,direction: option.direction}]
+    const snakeLength = option.snake.length
+    for (let i =1; i<snakeLength;++i){
+      snake.push({ ...option.snake[i-1] })
+    } 
+
+    option.snake = snake
+  }
+
+  const getDirection = (key) => {
+    let direction = 0
+    switch (key) {
+      case 'ArrowDown':
+        direction = 1
+        break
+      case 'ArrowUp':
+        direction = -1
+        break
+      case 'ArrowLeft':
+        direction = -2
+        break
+      case 'ArrowRight':
+        direction = 2
+        break
+    }
+
+    return direction
+  }
+
+  const isDirectionCorrect = (direction) => { // 디렉션을 반대로 바꾸는 걸 막기 위해
+    return (option.direction === option.snake[0].direction && option.direction !== -direction) // -direction 이 반대방향 처리
+  }
+
+  const isGameOver = () =>{
+    const head = option.snake[0]
+    return option.snake.some(
+      (body,index) => index !== 0 && head.x === body.x && head.y === body.y
+    )
+  }
+
   const play = (timestamp) => {
     start++
     if (option.gameEnd) {
       return
     }
     if (timestamp - start > 1000 / 10) {
+      if (isGameOver()) {
+        option.gameEnd = true
+        setHighScore()
+        alert('게임오버')
+        return
+      }
+      playSnake()
       buildBorad()
       buildFood(ctx, option.food.x, option.food.y)
       setSnake()
+      getFood()
       start = timestamp
     }
     window.requestAnimationFrame(play) // 재귀적으로 호출 
-    // if(isGameOver){
-    //   option.gameEnd = true
-    //   setHighScore()
-    //   alert('게임오버')
-    //   return
-    // }
   }
   init()
 })()
