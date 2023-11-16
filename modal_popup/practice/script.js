@@ -18,4 +18,9 @@
   $button.addEventListener('click', toggleModal)
   $modalCancleButton.addEventListener('click', toggleModal)
   $modalConfirmButton.addEventListener('click', toggleModal)
+  window.addEventListener('click', (e)=>{
+    if(e.target === $modal){
+      toggleModal()
+    }
+  })
 })()
