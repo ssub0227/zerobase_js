@@ -42,10 +42,13 @@
     }
 
     start(){
+      clearInterval(this.interver) // 스타트를 누를 때마다 진행되고 있는 인터벌을 없애줘야 함
       this.startTime = Date.now() - this.elapsedTime
       this.interver = setInterval(this.startTimer.bind(this), 10) // class 안에 있는 this사용을 위해 바인딩
     }
-    stop(){}
+    stop(){
+      clearInterval(this.interver)
+    }
     reset(){}
   }
   const $startButton = get('.timer_button.start')
@@ -54,5 +57,6 @@
   const $timer = get('.timer')
   const stopWatch = new Stopwatch($timer)
   
-  $startButton.addEventListener('click', stopWatch.start())
+  $startButton.addEventListener('click', ()=> stopWatch.start())
+  $stopButton.addEventListener('click', () => stopWatch.stop())
 })()
