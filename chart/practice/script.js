@@ -26,6 +26,15 @@
       }
     }
 
+    drawlegends = () =>{
+      let index = 0
+      for(const [instruments, value] of this.datas){
+        this.label += `<span style='background-color:${this.colors[index]}'>${instruments}</span> `
+        index++
+      }
+      this.legends.innerHTML = this.label
+    }
+
     drawCanvas = (centerX, centerY, radius, startAngle, endAngle, color) => {
       this.ctx.beginPath()
       this.ctx.fillStyle = color
@@ -67,6 +76,16 @@
         initial += angleValue
         index++
       }
+      if(donutChart){ // 도넛처럼 뚫리게 
+        this.drawCanvas(
+          centerX,
+          centerY,
+          this.radius / 3.5,
+          0,
+          Math.PI * 2,
+          'white'
+        )
+      }
     }
   }
 
@@ -92,7 +111,7 @@
   const chart = new Chart('.canvas', data, option)
   const { width, height, radius } = option
   chart.getTotal()
-  // chart.drawlegends()
-  // chart.drawChart(true, width / 2 - 10 - radius, height / 2, labelOption)
+  chart.drawlegends()
+  chart.drawChart(true, width / 2 - 10 - radius, height / 2, labelOption)
   chart.drawChart(false, width / 2 + 10 + radius, height / 2, labelOption)
 })()
