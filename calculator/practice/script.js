@@ -97,12 +97,19 @@
         return
       }
     }
+
+    reset(){
+      this.currentValue =''
+      this.prevValue = ''
+      this.resetOperation()
+    }
   }
 
   const numberButtons = getAll('.cell_button.number')
   const operationButtons = getAll('.cell_button.operation')
   const computeButton = get('.cell_button.compute')
   const clearButton = get('.cell_button.clear')
+  const allClearButton = get('.cell_button.all_clear')
   const display = get('.display')
 
   const calculator = new Calculator(display)
@@ -128,6 +135,11 @@
 
   clearButton.addEventListener('click', ()=>{
     calculator.clear()
+    calculator.updateDisplay()
+  })
+
+  allClearButton.addEventListener('click', ()=>{
+    calculator.reset()
     calculator.updateDisplay()
   })
 })()
