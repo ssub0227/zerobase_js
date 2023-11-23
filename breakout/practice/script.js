@@ -43,7 +43,7 @@
       this.bricks = []
     }
 
-    init = () =>{
+    init = () => {
       for (let colIndex =0; colIndex < this.brickCol; colIndex++){
         this.bricks[colIndex] = []
         for  (let rowIndex =0; rowIndex < this.brickRow; rowIndex++){
@@ -55,6 +55,16 @@
       this.draw()
     }
 
+
+    drawBall = () => {
+      this.ctx.beginPath()
+      this.ctx.arc(this.ballX, this.ballY, this.radius, 0, Math.PI * 2)
+      this.ctx.fillStyle = this.ballColor
+      this.ctx.fill()
+      this.ctx.closePath()
+    }
+
+
     draw = () => {
       this.ctx.clearRect(0,0,this.canvas.width, this.canvas.height)
 
@@ -65,35 +75,44 @@
       )
 
       this.drawBall()
-      this.drawpaddle()
-      this.drawBricks()
-      this.drawScore()
-      this.drawLives()
-      this.detectCollision()
+      // this.drawpaddle()
+      // this.drawBricks()
+      // this.drawScore()
+      // this.drawLives()
+      // this.detectCollision()
+
+      this.ballX += this.directX
+      this.ballY += this.directY
+
+      requestAnimationFrame(this.draw)
+    }
+
+    reset = () =>{
+      document.lacation.reload()
     }
   }
 
 
   const data = {
     lives: 5,
-    speed: 0,
+    speed: 2,
     paddleHeight: 10,
-    paddleWidth: 25,
-    bg: `./assets/bg.jpeg`,
-    ballColor: '#04bf55',
-    paddleColor: '#05aff2',
-    fontColor: '#f2bb16',
-    brickStartColor: '#f29f05',
-    brickEndColor: '#f21905',
+    paddleWidth: 75,
+    bg: './assets/bg.jpeg',
+    ballColor: '#04BF55',
+    paddleColor: '#05AFF2',
+    fontColor: '#F2BB16',
+    brickStartColor: '#F29F05',
+    brickEndColor: '#F21905',
     brickRow: 3,
-    brickCol:5,
+    brickCol: 5,
     brickWidth: 75,
-    brickHeight:20,
+    brickHeight: 20,
     brickPad: 10,
-    brickPosX:30,
-    brickPosY: 10
+    brickPosX: 30,
+    brickPosY: 30,
   }
 
   const brickBreak = new BrickBreak('.canvas', data)
-  BrickBreak.init()
+  brickBreak.init()
 })()
