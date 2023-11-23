@@ -64,6 +64,13 @@
       this.ctx.closePath()
     }
 
+    drawpaddle = () =>{
+      this.ctx.beginPath()
+      this.ctx.rect(this.paddleX, this.canvas.height - this.paddleHeight, this.paddleWidth, this.paddleHeight)
+      this.ctx.fillStyle = this.paddleColor
+      this.ctx.fill()
+      this.ctx.closePath()
+    }
 
     draw = () => {
       this.ctx.clearRect(0,0,this.canvas.width, this.canvas.height)
@@ -75,7 +82,7 @@
       )
 
       this.drawBall()
-      // this.drawpaddle()
+      this.drawpaddle()
       // this.drawBricks()
       // this.drawScore()
       // this.drawLives()
