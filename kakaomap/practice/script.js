@@ -1,8 +1,7 @@
 ;(function () {
   'use strict'
 
-  const shops = [
-    {
+  const shops = [{
       id: 1292273001,
       name: '매콤돈가스&칡불냉면 판교점',
       lat: 37.40189834738935,
@@ -30,6 +29,13 @@
   const get = (target) => {
     return document.querySelector(target)
   }
+
+  
+  const $map = get('#map')
+  const mapContainer = new kakao.maps.Map( $map, {
+    center: new kakao.maps.LatLng(defaultPos.lat, defaultPos.lng),
+    level:3
+  })
 
   const init = () => {}
 
