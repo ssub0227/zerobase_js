@@ -31,6 +31,8 @@
   }
   
   const $map = get('#map')
+  const $geoLocationButton = get('.geolocation_button')
+
   const mapContainer = new kakao.maps.Map( $map, {
     center: new kakao.maps.LatLng(defaultPos.lat, defaultPos.lng),
     level:3
@@ -64,7 +66,40 @@
       infoWindow.open(mapContainer, marker)
     })
   }
+  const successGeoLocation = (position) => {
+    const { latitude, longitude } = position.coords
+    mapContainer.setCenter(new kakao.maps.LatLng(latitude, longitude))
+    const marker = createMarker(latitude, longitud)
+    marker.setMap(mapContainer)
+  }
+  const errorGeoLocation = (error) => {
+    if(error.code === 1){
+      alert('위치 정보 권한이 없습니다.')
+    } else if (error.code === 2){
+      alert('사용할 수 없는 위치 정보입니다.')
+    } else if (error.code === 3){
+      alert('타임아웃이 발생했습니다.')
+    } else {
+      alert('오류가 발생했습니다.')
+    }
+  }
+
+  const getLocation = () => {
+    if('geoLocation' in navigator){
+      navigator.getCurrentPosition(
+        successGeoLocation,
+        errorGeoLocation
+      )
+    } else{
+      alert('위치 정보 확인 불가능')
+    }
+  }
+
+
   const init = () => {
+    $geoLocationButton.addEventListener('click',() => {
+      getLocation()
+    })
     createShopElement()
   }
 
